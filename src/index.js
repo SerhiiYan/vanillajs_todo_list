@@ -73,8 +73,21 @@ function updateTodo(event) {
     }
     return todo;
   })
-  console.log(todos);
+  
   renderTodos(todos);
+}
+
+function deleteTodo(event) {
+  if(event.target.nodeName.toLowerCase() !== 'button') {
+    return;
+  }
+  const id = parseInt(event.target.parentNode.getAttribute('data-id'), 10);
+  const label = event.target.previousElementSibling.innerText;
+  
+  if(window.confirm(`Delete ${label}?`)) {
+    todos = todos.filter((todo, index) => index !== id);
+    renderTodos(todos);
+  }
 }
 
 //init
@@ -83,6 +96,8 @@ function init() {
   form.addEventListener('submit', addTodo)
   // Update Todo
   list.addEventListener('change', updateTodo)
+  // Delete Todo
+  list.addEventListener('click', deleteTodo)
 }
 
 init()
