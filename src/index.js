@@ -19,8 +19,8 @@ app.innerHTML = `
   </div>
 `;
 
-let todos = [];
-
+let todos = JSON.parse(localStorage.getItem('todos')) || [];
+console.log(todos);
 //selectors
 const root = document.querySelector('.todos');
 const list = root.querySelector('.todos-list');
@@ -31,6 +31,10 @@ const input = form.elements.todo;
 
 
 //functions
+function saveToStorage(todos) {
+  localStorage.setItem('todos', JSON.stringify(todos))
+}
+
 function renderTodos(todos) {
   let todoString = '';
   todos.forEach((todo, index) => {
@@ -63,6 +67,7 @@ function addTodo(event) {
     }
   ]
   renderTodos(todos);
+  saveToStorage(todos);
   input.value = '';
 }
 
@@ -78,8 +83,8 @@ function updateTodo(event) {
     }
     return todo;
   })
-  
   renderTodos(todos);
+  saveToStorage(todos);
 }
 
 function deleteTodo(event) {
@@ -92,6 +97,7 @@ function deleteTodo(event) {
   if(window.confirm(`Delete ${label}?`)) {
     todos = todos.filter((todo, index) => index !== id);
     renderTodos(todos);
+    saveToStorage(todos);
   }
 }
 
@@ -102,20 +108,23 @@ function clearCompleteTodos(event) {
   }
   if(window.confirm(`Delete ${count} todos`)) {
     todos = todos.filter((todo, index) => !todo.complete)
-    renderTodos(todos)
+    renderTodos(todos);
+    saveToStorage(todos);
   }
 }
 
 //init
 function init() {
+  // Render Todos
+  renderTodos(todos);
   // Add Todo
-  form.addEventListener('submit', addTodo)
+  form.addEventListener('submit', addTodo);
   // Update Todo
-  list.addEventListener('change', updateTodo)
+  list.addEventListener('change', updateTodo);
   // Delete Todo
-  list.addEventListener('click', deleteTodo)
+  list.addEventListener('click', deleteTodo);
   // Complete All Todos
-  clear.addEventListener('click', clearCompleteTodos)
+  clear.addEventListener('click', clearCompleteTodos);
 }
 
 init()
