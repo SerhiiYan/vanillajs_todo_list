@@ -25,8 +25,10 @@ let todos = [];
 const root = document.querySelector('.todos');
 const list = root.querySelector('.todos-list');
 const count = root.querySelector('.todos-count');
+const clear = root.querySelector('.todos-clear')
 const form = document.forms.todos;
 const input = form.elements.todo;
+
 
 //functions
 function renderTodos(todos) {
@@ -41,7 +43,10 @@ function renderTodos(todos) {
     `
   });
   list.innerHTML = todoString;
-  count.innerText = todos.filter(todo => !todo.complete).length
+  count.innerText = todos.filter(todo => !todo.complete).length;
+  clear.style.display = todos.filter(todo => todo.complete).length 
+  ? 'block' 
+  : 'none';
 }
 
 
@@ -90,6 +95,17 @@ function deleteTodo(event) {
   }
 }
 
+function clearCompleteTodos(event) {
+  const count = todos.filter(todo => todo.complete).length;
+  if(count === 0) {
+    return;
+  }
+  if(window.confirm(`Delete ${count} todos`)) {
+    todos = todos.filter((todo, index) => !todo.complete)
+    renderTodos(todos)
+  }
+}
+
 //init
 function init() {
   // Add Todo
@@ -98,6 +114,8 @@ function init() {
   list.addEventListener('change', updateTodo)
   // Delete Todo
   list.addEventListener('click', deleteTodo)
+  // Complete All Todos
+  clear.addEventListener('click', clearCompleteTodos)
 }
 
 init()
