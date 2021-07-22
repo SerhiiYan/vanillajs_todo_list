@@ -101,7 +101,7 @@ function deleteTodo(event) {
   }
 }
 
-function clearCompleteTodos(event) {
+function clearCompleteTodos() {
   const count = todos.filter(todo => todo.complete).length;
   if(count === 0) {
     return;
@@ -113,7 +113,45 @@ function clearCompleteTodos(event) {
   }
 }
 
-//init
+function editTodo(event) {
+  if(event.target.nodeName.toLowerCase() !== 'span') {
+    return;
+  }
+  const id = parseInt(event.target.parentNode.getAttribute('data-id'), 10);
+  const todoLabel = todos[id].label;
+  
+  const input = document.createElement('input');
+  input.type = 'text';
+  input.value = todoLabel;
+  
+  function handleEdit(event) {
+    event.stopPropagation();
+    const label = this.value;
+    if(label !== todoLabel) {
+      todos = todos.map((todo, index) => {
+        if(index === id) {
+          return {
+            ...todo,
+            label
+          }
+        }
+        return todo;
+      })
+      renderTodos(todos);
+      saveToStorage(todos);
+    }
+    // clean up
+    event.target.display = '';
+    this.removeEventListener('change', handleEdit)
+  }
+  
+  event.target.display = 'none';
+  event.target.parentNode.append(input);
+  input.addEventListener('change', handleEdit)
+  input.focus();
+}
+
+// init
 function init() {
   // Render Todos
   renderTodos(todos);
@@ -121,6 +159,8 @@ function init() {
   form.addEventListener('submit', addTodo);
   // Update Todo
   list.addEventListener('change', updateTodo);
+  // Edit Todo
+  list.addEventListener('dblclick', editTodo);
   // Delete Todo
   list.addEventListener('click', deleteTodo);
   // Complete All Todos
